@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Lugrasimo';
+  src: local('Lugrasimo'), url(./fonts/Lugrasimo-Regular.ttf) format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-lugrasimo {
+  font-family: 'Lugrasimo', sans-serif;
+}
+
+.icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-left: 1rem;
+}
