@@ -1,0 +1,10 @@
+@rootAPI = http://localhost:5214
+
+GET {{backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+GET {{rootAPI}}/hello/
+Accept: application/json
+
+###
