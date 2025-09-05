@@ -16,7 +16,7 @@ export const Game = () => {
     ])
 
   return (
-    <>
+    <div className="hidden absolute">
         <div className='flex flex-row justify-center text-9xl font-lugrasimo mt-8 underline'>
         Sink the fleet
         </div>
@@ -29,7 +29,7 @@ export const Game = () => {
                 </div>
             ))}
         </div>
-    </>
+    </div>
   )
 }
 
