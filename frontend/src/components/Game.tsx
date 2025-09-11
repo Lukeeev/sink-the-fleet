@@ -73,7 +73,31 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
     }
 
     const handleOnDragOver = (e: React.DragEvent<HTMLDivElement>, rowIndex: number, cellIndex: number) => {
-        console.log(e + "Row: " + rowIndex + "Cell: " + cellIndex);
+        e.preventDefault();
+        setGrid(prevField => {
+            const updatedField = [...prevField];
+            if(updatedField[rowIndex][cellIndex] != 1){
+                updatedField[rowIndex][cellIndex] = 2;
+            }
+            return updatedField;
+        })
+    }
+
+    const handleOnDragLeave = (e: React.DragEvent<HTMLDivElement>, rowIndex: number, cellIndex: number) => {
+        setGrid(prevField => {
+            const updatedField = [...prevField];
+            if(updatedField[rowIndex][cellIndex] != 1){
+                updatedField[rowIndex][cellIndex] = 0;
+            }
+            return updatedField;
+        })
+    }
+    const handleOnDrop = (e: React.DragEvent<HTMLDivElement>, rowIndex: number, cellIndex: number) => {
+        setGrid(prevField => {
+            const updatedField = [...prevField];
+            updatedField[rowIndex][cellIndex] = 1;
+            return updatedField;
+        })
     }
 
 
@@ -81,9 +105,8 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
     return (
         <>
             <div className="absolute h-screen w-screen flex flex-col justify-center items-center max-w-full gap-8 text-2xl mt-9">
-                {/* TODO: Add the name of the mode next to the title*/}
                 <div className='flex flex-col justify-center items-center text-6xl font-lugrasimo mt-8 underline'>
-                    Sink the fleet 
+                    Sink the fleet
                     <br />
                     <span className="text-4xl mt-4">Mode: {gameMode.mode}</span>
                 </div>
@@ -93,8 +116,8 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
                             <div
                                 key={`${rowIndex}-${cellIndex}`}
                                 onDragOver={(e) => handleOnDragOver(e, rowIndex, cellIndex)}
-                                // onDragLeave={}
-                                // onDrop={}
+                                onDragLeave={(e) => handleOnDragLeave(e, rowIndex, cellIndex)}
+                                onDrop={(e) => handleOnDrop(e, rowIndex, cellIndex)}
 
                                 className="border border-black p-5">
                                 {number}
