@@ -66,18 +66,33 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
 
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>, id: string) => {
         let ship = ships.find(ship => ship.id === id);
-        const length = ship?.length;
-        console.log(id, length);
 
         e.dataTransfer.setData("application/json", JSON.stringify(ship))
     }
 
     const handleOnDragOver = (e: React.DragEvent<HTMLDivElement>, rowIndex: number, cellIndex: number) => {
         e.preventDefault();
+        let shipData = e.dataTransfer.getData("application/json");
+        
+        if(!shipData) return;
+
+         let ship;
+        try {
+            ship = JSON.parse(shipData);
+        } catch {
+            return;
+        }
+
         setGrid(prevField => {
             const updatedField = [...prevField];
-            if(updatedField[rowIndex][cellIndex] != 1){
-                updatedField[rowIndex][cellIndex] = 2;
+            if((cellIndex + ship.length) <= 9){
+                if(updatedField[rowIndex][cellIndex] != 1){
+                    for(let i = 0; i < ship.length; i++){
+                        updatedField[rowIndex][cellIndex + i] = 2;
+                    }
+                } else {
+                    updatedField[rowIndex][cellIndex] = 0;
+                }
             }
             return updatedField;
         })
@@ -93,9 +108,19 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
         })
     }
     const handleOnDrop = (e: React.DragEvent<HTMLDivElement>, rowIndex: number, cellIndex: number) => {
+        e.preventDefault();
+        let shipData = e.dataTransfer.getData("application/json");
+        let ship = JSON.parse(shipData);
+
         setGrid(prevField => {
             const updatedField = [...prevField];
-            updatedField[rowIndex][cellIndex] = 1;
+            if((cellIndex + ship.length) <= 9){
+                for(let i = 0; i < ship.length; i++){
+                    updatedField[rowIndex][cellIndex + i] = 1;
+                }
+            } else {
+                updatedField[rowIndex][cellIndex] = 0;
+            }
             return updatedField;
         })
     }
