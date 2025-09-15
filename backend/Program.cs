@@ -29,9 +29,10 @@ namespace backend
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+            } else {
+                app.UseHttpsRedirection();
             }
 
-            app.UseHttpsRedirection();
 
             app.UseCors("AllowReactApp");
 
