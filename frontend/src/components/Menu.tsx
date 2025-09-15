@@ -30,9 +30,9 @@ export default function Menu({ onGameChosen }: MenuProps) {
         Sink the fleet
       </div>
       <div>{message}</div>
-      <div onClick={() => onGameChosen({ mode: "online" })} className='flex flex-row border rounded-2xl p-4 w-fit'>Play online                          <span><img src={Scroll} alt="Scroll" className='icon' /></span></div>
-      <div onClick={() => onGameChosen({ mode: "programmed opponent" })} className='flex flex-row border rounded-2xl p-4 w-fit'>Play against programmed opponent <span><img src={Scroll} alt="Scroll" className='icon' /></span></div>
-      <div onClick={() => onGameChosen({ mode: "AI" })} className='flex flex-row border rounded-2xl p-4 w-fit'>Play against AI                          <span><img src={Scroll} alt="Scroll" className='icon' /></span></div>
+      <button disabled onClick={() => onGameChosen({ mode: "online" })} className='flex flex-row border rounded-2xl p-4 w-fit'>Play online                          <span><img src={Scroll} alt="Scroll" className='icon' /></span></button>
+      <button onClick={() => onGameChosen({ mode: "programmed opponent" })} className='flex flex-row border rounded-2xl p-4 w-fit'>Play against programmed opponent <span><img src={Scroll} alt="Scroll" className='icon' /></span></button>
+      <button disabled onClick={() => onGameChosen({ mode: "AI" })} className='flex flex-row border rounded-2xl p-4 w-fit'>Play against AI                          <span><img src={Scroll} alt="Scroll" className='icon' /></span></button>
       <div className='flex flex-row items-center'>
         <img src={Corvette_ship} alt="Corvette ship" className='w-72 h-auto' />
         <img src={Canoe} alt="Canoe" className='w-72 h-auto bg-red-500' />
