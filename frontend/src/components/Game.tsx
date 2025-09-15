@@ -27,11 +27,11 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
     ])
 
     const ships = [
-        { id: "Corvette", length: 2 },
-        { id: "Canoe", length: 1 },
+        { id: "Corvette", length: 3 },
+        { id: "Canoe", length: 2 },
         { id: "Warship", length: 3 },
-        { id: "Junk", length: 4 },
-        { id: "ManOWar", length: 5 },
+        { id: "Junk", length: 2 },
+        { id: "ManOWar", length: 4 },
     ]
 
     const [visibility, setVisibility] = useState<string>("hidden");
@@ -99,6 +99,8 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
     }
 
     const handleOnDragLeave = (e: React.DragEvent<HTMLDivElement>, rowIndex: number, cellIndex: number) => {
+        e.preventDefault();
+
         setGrid(prevField => {
             const updatedField = [...prevField];
             if(updatedField[rowIndex][cellIndex] != 1){
@@ -135,11 +137,12 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
                     <br />
                     <span className="text-4xl mt-4">Mode: {gameMode.mode}</span>
                 </div>
-                <div className="grid">
+                <div className={`grid ${visibility === "hidden" ? "hidden" : "block"}`}>
                     {grid.map((row, rowIndex) => (
                         row.map((number, cellIndex) => (
                             <div
                                 key={`${rowIndex}-${cellIndex}`}
+                                onDragEnter={(e) => e.preventDefault()}
                                 onDragOver={(e) => handleOnDragOver(e, rowIndex, cellIndex)}
                                 onDragLeave={(e) => handleOnDragLeave(e, rowIndex, cellIndex)}
                                 onDrop={(e) => handleOnDrop(e, rowIndex, cellIndex)}
