@@ -35,21 +35,21 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
         { id: "ManOWar", length: 4 },
     ]
 
-    // grid values: 0 - empty, 1 - ship placed, 2 - preview of ship's position
-    const [grid, setGrid] = useState<number[][]>(defaultGrid);
-
     const defaultShips = ships.reduce((acc, ship) => {
         acc[ship.id] = 2;
         return acc;
     }, {} as Record<string, number>);
 
+    // grid values: 0 - empty, 1 - ship placed, 2 - preview of ship's position
+    const [grid, setGrid] = useState<number[][]>(defaultGrid);
+
     const [visibility, setVisibility] = useState<string>("hidden");
-
-
-    const [remainingShips, setRemainingShips] = useState(defaultShips);
 
     const [gameReady, setGameReady] = useState(false);
 
+    const [remainingShips, setRemainingShips] = useState(defaultShips);
+
+    const allShipsPlaced = Object.values(remainingShips).every(count => count === 0);
 
     // // const handleGameMode = (gameChosen: GameProps) => {
     // () => {
@@ -134,13 +134,23 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
         setGrid(prevField => {
             const updatedField = [...prevField];
             if ((cellIndex + ship.length) <= 9) {
-                for (let i = 0; i < ship.length; i++) {
-                    updatedField[rowIndex][cellIndex + i] = 1;
+
+                const conflict = updatedField[rowIndex]
+                    .slice(cellIndex, cellIndex + ship.length)
+                    .some(cell => cell === 1);
+
+                if (conflict) {
+                    return updatedField; // at least one cell occupied, cancel drop
+                } else {
+                    for (let i = 0; i < ship.length; i++) {
+                        updatedField[rowIndex][cellIndex + i] = 1;
+                    }
                 }
                 setRemainingShips(prev => ({
                     ...prev,
                     [ship.id]: prev[ship.id] - 1
                 }));
+
             } else {
                 updatedField[rowIndex][cellIndex] = 0;
             }
@@ -157,10 +167,23 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
         setGameReady(true);
     }
 
+    const handleAttack = (rowIndex: number, cellIndex: number) => {
+        setGrid(prevField => {
+            let updatedField = [...prevField];
+            if (updatedField[rowIndex][cellIndex] === 1) {
+                updatedField[rowIndex][cellIndex] = 2;
+            } else {
+                updatedField[rowIndex][cellIndex] = 3;
+            }
+            return updatedField;
+        })
+        console.log(rowIndex, cellIndex);
+    }
+
 
     return (
         <>
-            <div className="absolute h-screen w-screen flex flex-col items-center max-w-full gap-8 text-2xl mt-9">
+            <div className="absolute h-screen w-screen flex flex-col items-center max-w-full gap-8 text-2xl">
                 <div className='flex flex-col justify-center items-center text-6xl font-lugrasimo mt-8 underline'>
                     Sink the fleet
                     <br />
@@ -180,7 +203,8 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
                                         onDrop={(e) => handleOnDrop(e, rowIndex, cellIndex)}
 
                                         className="border border-black p-5  w-16 h-16 flex items-center justify-center">
-                                        {number === 1 ? 1 : "" }
+                                        {/* {number === 1 ? 1 : ""} */}
+                                        {number === 1 ? "#" : number === 2 ? "🔥" : number === 3 ? "🌊" : ""}
                                     </div>
                                 ))
                             ))}
@@ -189,7 +213,7 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
                     {gameReady ?
                         <div className="flex flex-col items-center">
                             <div className="font-lugrasimo text-2xl mb-2">Enemy</div>
-                            <EnemyBoard />
+                            <EnemyBoard onAttack={handleAttack} />
                         </div>
                         :
                         <div className="flex flex-col gap-12">
@@ -197,10 +221,13 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
                                 <img src={Rudder} alt="Rudder" className='h-52' />
                                 <span className="mt-2 self-center font-lugrasimo">Reform the fleet</span>
                             </div>
-                            <div onClick={() => handleGameReady()} className="flex flex-col items-center">
-                                <img src={Anchor} alt="Anchor" className='h-48' />
-                                <span className="mt-2 self-center font-lugrasimo">Lower the anchors</span>
-                            </div>
+                            {allShipsPlaced ?
+                                <div onClick={() => handleGameReady()} className="flex flex-col items-center">
+                                    <img src={Anchor} alt="Anchor" className='h-48' />
+                                    <span className="mt-2 self-center font-lugrasimo">Lower the anchors</span>
+                                </div>
+                                : ""
+                            }
                         </div>
                     }
                 </div>
