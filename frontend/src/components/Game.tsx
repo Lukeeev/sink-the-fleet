@@ -49,6 +49,8 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
 
     const [remainingShips, setRemainingShips] = useState(defaultShips);
 
+    const [playersTurn, setPlayersTurn] = useState(true);
+
     const allShipsPlaced = Object.values(remainingShips).every(count => count === 0);
 
     // // const handleGameMode = (gameChosen: GameProps) => {
@@ -135,8 +137,12 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
             const updatedField = [...prevField];
             if ((cellIndex + ship.length) <= 9) {
 
+                const row = updatedField[rowIndex];
+                const start = Math.max(0, cellIndex - 1);
+                const end = Math.min(row.length, cellIndex + ship.length + 1);
+
                 const conflict = updatedField[rowIndex]
-                    .slice(cellIndex, cellIndex + ship.length)
+                    .slice(start, end)
                     .some(cell => cell === 1);
 
                 if (conflict) {
@@ -189,9 +195,12 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
                     <br />
                     <span className="text-4xl mt-4">Game mode: {gameMode.mode}</span>
                 </div>
+                <div className='flex flex-col justify-center items-center text-4xl font-lugrasimo font-bold border-t-3 border-b-3 p-2'>
+                    {gameReady ? playersTurn ? "Your turn" : "Enemy's turn" : ""}
+                </div>
                 <div className="flex flex-col md:flex-row items-center gap-8">
                     <div className="flex flex-col items-center">
-                        <div className="font-lugrasimo text-2xl items-center mb-2">Your Fleet</div>
+                        <div className="font-lugrasimo text-3xl items-center mb-2 font-bold">Your Fleet</div>
                         <div className={`grid ${visibility === "hidden" ? "hidden" : "block"}`}>
                             {grid.map((row, rowIndex) => (
                                 row.map((number, cellIndex) => (
@@ -212,8 +221,8 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
                     </div>
                     {gameReady ?
                         <div className="flex flex-col items-center">
-                            <div className="font-lugrasimo text-2xl mb-2">Enemy</div>
-                            <EnemyBoard onAttack={handleAttack} />
+                            <div className="font-lugrasimo text-3xl mb-2 font-bold">Enemy</div>
+                            <EnemyBoard onAttack={handleAttack} isPlayersTurn={playersTurn} onPlayersTurn={(turn) => setPlayersTurn(turn)}/>
                         </div>
                         :
                         <div className="flex flex-col gap-12">
@@ -249,10 +258,6 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
                             <div>
                                 <div draggable onDragStart={(e) => handleDragStart(e, "Warship")}>
                                     <img src={Warship} alt="Warship" className='h-42' />
-                                    {/* <div className="flex flex-row">
-                                    <div className="p-5 bg-purple-500 border"></div>
-                                    <div className="p-5 bg-purple-500 border"></div>
-                                </div> */}
                                 </div>
                                 <span className="self-center">{remainingShips["Warship"]}</span>
                             </div>

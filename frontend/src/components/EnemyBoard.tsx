@@ -2,9 +2,11 @@ import { useEffect, useState } from "react"
 
 type EnemyBoardProps = {
     onAttack: (rowIndex: number, celIndex: number) => void;
+    isPlayersTurn: boolean;
+    onPlayersTurn: (playersTurn: boolean) => void
 }
 
-export const EnemyBoard = ({onAttack}: EnemyBoardProps) => {
+export const EnemyBoard = ({ onAttack, isPlayersTurn, onPlayersTurn }: EnemyBoardProps) => {
 
     const defaultGrid = [
         // [0, 1, 1, 0, 0, 0, 1, 1, 1],
@@ -37,6 +39,8 @@ export const EnemyBoard = ({onAttack}: EnemyBoardProps) => {
 
     const [grid, setGrid] = useState<number[][]>(defaultGrid);
 
+    const [userField, setUserField] = useState<number[]>(() => Array.from({ length: 81 }, (_, i) => i));
+
     useEffect(() => {
         const defaultShips = ships.reduce((acc, ship) => {
             acc[ship.id] = 2;
@@ -68,8 +72,12 @@ export const EnemyBoard = ({onAttack}: EnemyBoardProps) => {
                     let rowIndex = Math.floor(random / 9);
                     if ((cellIndex + ship.length) <= 9) {
 
+                        const row = updatedField[rowIndex];
+                        const start = Math.max(0, cellIndex - 1);
+                        const end = Math.min(row.length, cellIndex + ship.length + 1);
+
                         const conflict = updatedField[rowIndex]
-                            .slice(cellIndex, cellIndex + ship.length)
+                            .slice(start, end)
                             .some(cell => cell === 1);
 
                         if (!conflict) {
@@ -86,22 +94,29 @@ export const EnemyBoard = ({onAttack}: EnemyBoardProps) => {
         setGrid(updatedField);
     }, [])
 
-    let userField: number[] = Array.from({ length: 81 }, (_, i) => i);
-
 
     const handleAttack = () => {
-        let random = Math.floor(Math.random() * userField.length);
-        userField.splice(random, 1);
 
-        let cellIndex = random % 9;
-        let rowIndex = Math.floor(random / 9);
+        if (userField.length === 0) return;
+
+        let randomIndex = Math.floor(Math.random() * userField.length);
+        let cell = userField[randomIndex];
+
+        setUserField(prev => prev.filter((_, i) => i !== randomIndex));
+
+        let cellIndex = cell % 9;
+        let rowIndex = Math.floor(cell / 9);
 
         console.log("cellindex:  " + cellIndex + "rowindex: " + rowIndex);
 
-        onAttack(rowIndex, cellIndex);
+        setTimeout(() => {
+            onAttack(rowIndex, cellIndex);
+            onPlayersTurn(true);
+        }, 1000)
     }
 
     const handleOnClick = (rowIndex: number, colIndex: number) => {
+        if (!isPlayersTurn) return;
 
         setGrid(prevField => {
             const updatedField = prevField.map(row => [...row]); // clone
@@ -113,6 +128,10 @@ export const EnemyBoard = ({onAttack}: EnemyBoardProps) => {
             handleWin(updatedField);
             return updatedField;
         });
+
+        onPlayersTurn(false);
+
+        handleAttack();
 
     };
 
@@ -133,13 +152,12 @@ export const EnemyBoard = ({onAttack}: EnemyBoardProps) => {
                             className="border border-black p-5 w-16 h-16 flex items-center justify-center"
                             onClick={() => handleOnClick(rowIndex, colIndex)}
                         >
-                            {number === 1 ? 1 : ""}
-                            {/* {number === 2 ? "🔥" : number === 3 ? "🌊" : ""} */}
+                            {/* {number === 1 ? 1 : ""} */}
+                            {number === 2 ? "🔥" : number === 3 ? "🌊" : ""}
                         </div>
                     ))
                 ))}
             </div>
-            <button onClick={handleAttack} className="border p-5 bg-gray-500">Attack user</button>
         </div>
     )
 }
