@@ -45,11 +45,13 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
 
     const [visibility, setVisibility] = useState<string>("hidden");
 
-    const [gameReady, setGameReady] = useState(false);
+    const [gameReady, setGameReady] = useState<boolean>(false);
 
-    const [remainingShips, setRemainingShips] = useState(defaultShips);
+    const [remainingShips, setRemainingShips] = useState<Record<string, number>>(defaultShips);
 
-    const [playersTurn, setPlayersTurn] = useState(true);
+    const [playersTurn, setPlayersTurn] = useState<boolean>(true);
+
+    const [gameResult, setGameResult] = useState<string>("");
 
     const allShipsPlaced = Object.values(remainingShips).every(count => count === 0);
 
@@ -186,6 +188,14 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
         console.log(rowIndex, cellIndex);
     }
 
+    const handleGameResult = (result: string) => {
+        if (result === "user") {
+            setGameResult("You won!")
+        } else {
+            setGameResult("Enemy won!")
+        }
+    }
+
 
     return (
         <>
@@ -195,9 +205,17 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
                     <br />
                     <span className="text-4xl mt-4">Game mode: {gameMode.mode}</span>
                 </div>
-                <div className='flex flex-col justify-center items-center text-4xl font-lugrasimo font-bold border-t-3 border-b-3 p-2'>
-                    {gameReady ? playersTurn ? "Your turn" : "Enemy's turn" : ""}
-                </div>
+                {gameReady ? playersTurn ?
+                    <div className='flex flex-col justify-center items-center text-4xl font-lugrasimo font-bold border-t-3 border-b-3 p-2'>
+                        {gameResult != "" ? gameResult : "Your turn"}
+                    </div>
+                    :
+                    <div className='flex flex-col justify-center items-center text-4xl font-lugrasimo font-bold border-t-3 border-b-3 p-2'>
+                        {gameResult != "" ? gameResult : "Enemy's turn"}
+                    </div>
+                    :
+                    ""}
+
                 <div className="flex flex-col md:flex-row items-center gap-8">
                     <div className="flex flex-col items-center">
                         <div className="font-lugrasimo text-3xl items-center mb-2 font-bold">Your Fleet</div>
@@ -222,7 +240,7 @@ export const Game = ({ gameMode, onGameChosen }: GameProps) => {
                     {gameReady ?
                         <div className="flex flex-col items-center">
                             <div className="font-lugrasimo text-3xl mb-2 font-bold">Enemy</div>
-                            <EnemyBoard onAttack={handleAttack} isPlayersTurn={playersTurn} onPlayersTurn={(turn) => setPlayersTurn(turn)}/>
+                            <EnemyBoard onResult={handleGameResult} usersGrid={grid} onAttack={handleAttack} isPlayersTurn={playersTurn} onPlayersTurn={(turn) => setPlayersTurn(turn)} />
                         </div>
                         :
                         <div className="flex flex-col gap-12">

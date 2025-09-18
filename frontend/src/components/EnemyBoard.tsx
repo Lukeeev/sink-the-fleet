@@ -3,21 +3,14 @@ import { useEffect, useState } from "react"
 type EnemyBoardProps = {
     onAttack: (rowIndex: number, celIndex: number) => void;
     isPlayersTurn: boolean;
-    onPlayersTurn: (playersTurn: boolean) => void
+    onPlayersTurn: (playersTurn: boolean) => void;
+    usersGrid: number[][];
+    onResult: (result: string) => void;
 }
 
-export const EnemyBoard = ({ onAttack, isPlayersTurn, onPlayersTurn }: EnemyBoardProps) => {
+export const EnemyBoard = ({ onAttack, isPlayersTurn, onPlayersTurn, usersGrid, onResult }: EnemyBoardProps) => {
 
     const defaultGrid = [
-        // [0, 1, 1, 0, 0, 0, 1, 1, 1],
-        // [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        // [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        // [0, 0, 0, 1, 1, 0, 0, 0, 0],
-        // [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        // [0, 0, 0, 0, 1, 1, 1, 1, 0],
-        // [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        // [0, 0, 0, 0, 0, 1, 1, 1, 0],
-        // [0, 1, 1, 1, 1, 0, 0, 0, 0]
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -111,6 +104,7 @@ export const EnemyBoard = ({ onAttack, isPlayersTurn, onPlayersTurn }: EnemyBoar
 
         setTimeout(() => {
             onAttack(rowIndex, cellIndex);
+            handleGameResult(usersGrid, "enemy")
             onPlayersTurn(true);
         }, 1000)
     }
@@ -125,7 +119,7 @@ export const EnemyBoard = ({ onAttack, isPlayersTurn, onPlayersTurn }: EnemyBoar
             } else if (updatedField[rowIndex][colIndex] === 0) {
                 updatedField[rowIndex][colIndex] = 3; // hit → water 🌊
             }
-            handleWin(updatedField);
+            handleGameResult(updatedField, "user");
             return updatedField;
         });
 
@@ -135,11 +129,15 @@ export const EnemyBoard = ({ onAttack, isPlayersTurn, onPlayersTurn }: EnemyBoar
 
     };
 
-    const handleWin = (grid: number[][]) => {
+    const handleGameResult = (grid: number[][], player: "user" | "enemy") => {
         const aliveShips = grid.some(row => row.includes(1));
-
+        onPlayersTurn(false);
         if (!aliveShips) {
-            console.log("You won!");
+            if (player === "user") {
+                onResult("user");
+            } else {
+                onResult("enemy")
+            }
         }
     }
     return (
