@@ -11,6 +11,7 @@ yarn-error.log*
 # Editor
 .env.local
 .DS_Store
+.vscode
 
 # .NET / Visual Studio
 bin/
